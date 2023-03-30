@@ -1,0 +1,15 @@
+{
+    "name": "ravler/ravler",
+    "type": "framework",
+    "description": "The Ravler Framework.",
+    "minimum-stability": "dev",
+    "require": {
+        "vlucas/phpdotenv": "^5.5",
+        "filp/whoops": "^2.15"
+    },
+    "autoload": {
+        "psr-4": {
+          "Source\\": "source/"
+        }
+    }
+}
