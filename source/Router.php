@@ -3,46 +3,49 @@ namespace Source;
 
 class Router{
     private static $routes =[];
-    public function addRoute($route,$actionData)
+    public static function addRoute($httpMethod,$route,$actionData)
     {        
         $class = $actionData[0];
         $method = $actionData[1];
-
+        
         self::$routes[] = 
         [
+            'httpMethod' => $httpMethod,
             'route' => $route,
             'class' => $class,
-            'method' => $method
+            'method' => $method,          
         ];
     }
-
     public function run()
     {
         $uri = $this->getURI();
         $params = [];
         foreach (self::$routes as $route) {
-            $pattern = preg_replace('/\//', '\\/', $route['route']);
-            $pattern = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[^\/]+)', $pattern);
-            $pattern = '/^' . $pattern . '$/';
-
-            if (preg_match($pattern, $uri, $matches)) {
-
-                $filePath = $route['class'].'.php';
-                
-                if($matches != null)
-                {
+            if($_SERVER['REQUEST_METHOD'] == $route['httpMethod'])
+            {
+                $pattern = preg_replace('/\//', '\\/', $route['route']);
+                $pattern = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[^\/]+)', $pattern);
+                $pattern = '/^' . $pattern . '$/';
+    
+                if (preg_match($pattern, $uri, $matches)) {
+    
+                    $filePath = $route['class'].'.php';
+                    
                     foreach ($matches as $key => $value) {
                         if (is_string($key)) {
                             $params[$key] = $value;
                         }
                     }
+                    
+                    $this->execution($filePath,$route['class'],$route['method'],$params);
                 }
-                
-                $this->include($filePath,$route['class'],$route['method'],$params);
+            }
+            else{
+                echo "Неверный метод маршрута!";
             }
         }
     }
-    private function include($filePath,$class,$method,$params)
+    private function execution($filePath,$class,$method,$params)
     {
         if(file_exists($filePath))
         {
