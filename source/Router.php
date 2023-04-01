@@ -1,8 +1,16 @@
 <?php
 namespace Source;
 
+use Source\Exception\BadRouteException;
+
 class Router{
-    private static $routes =[];
+    private static $routes = [];
+    private static $routeNotFound = false;
+    private static $methodNotFound = false;
+    private static $classNotFound = false;
+    private static $pathNotFound = false;
+    private static $httpMethodNotAllowed = false;
+
     public static function addRoute($httpMethod,$route,$actionData)
     {        
         $class = $actionData[0];
@@ -20,15 +28,21 @@ class Router{
     {
         $uri = $this->getURI();
         $params = [];
+        $result = null;
         foreach (self::$routes as $route) {
+            //echo $route['method'];
             if($_SERVER['REQUEST_METHOD'] == $route['httpMethod'])
             {
+                
+                self::$httpMethodNotAllowed = false;
+
                 $pattern = preg_replace('/\//', '\\/', $route['route']);
                 $pattern = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[^\/]+)', $pattern);
                 $pattern = '/^' . $pattern . '$/';
     
                 if (preg_match($pattern, $uri, $matches)) {
-    
+                    self::$routeNotFound = false;
+
                     $filePath = $route['class'].'.php';
                     
                     foreach ($matches as $key => $value) {
@@ -37,35 +51,66 @@ class Router{
                         }
                     }
                     
-                    $this->execution($filePath,$route['class'],$route['method'],$params);
+                    if(file_exists($filePath))
+                    {
+                        self::$pathNotFound = false;
+
+                        include $filePath;
+
+                        if(class_exists($route['class'],false))
+                        {
+                            self::$classNotFound = false;
+                            if(method_exists($route['class'],$route['method']))
+                            {
+                                self::$methodNotFound = false;
+                                $object = new $route['class'];
+
+                                call_user_func_array([$object,$route['method']],$params);
+
+                                return true;
+                            }else{                      
+                                self::$methodNotFound = true;
+                            }
+                        }else{
+                            self::$classNotFound = true;
+                        }
+                    }else{
+                        self::$pathNotFound = true;
+                    }
+                        
+                }
+                else{
+                    self::$routeNotFound = true;                 
                 }
             }
             else{
-                echo "Неверный метод маршрута!";
+                self::$httpMethodNotAllowed = true;
+                
             }
         }
+        $this->handlerException();
     }
-    private function execution($filePath,$class,$method,$params)
+    private function handlerException()
     {
-        if(file_exists($filePath))
+        if(self::$httpMethodNotAllowed === true)
         {
-            include $filePath;
-
-            if(class_exists($class,false))
-            {
-                if(method_exists($class,$method))
-                {
-                    $object = new $class;
-
-                    call_user_func_array([$object, $method],$params);
-                }else{                      
-                    echo "Метод не обнаружен!";
-                }
-            }else{
-                echo "Класс не обнаружен!";
-            }
-        }else{
-            echo "Файл не обнаружен!";
+            throw new BadRouteException('HttpMethod not Allowed!');
+        }
+        if(self::$routeNotFound === true)
+        {
+            throw new BadRouteException('Route not found!');
+        }
+        if(self::$pathNotFound === true)
+        {
+            throw new BadRouteException('file not found!');
+        }
+        if(self::$classNotFound === true)
+        {
+            throw new BadRouteException('class not found!');
+        }
+        if(self::$methodNotFound === true)
+        {
+            throw new BadRouteException('Method not found!');
         }
     }
     private function getURI()
