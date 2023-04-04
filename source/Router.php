@@ -30,16 +30,20 @@ class Router{
         $params = [];
         $result = null;
         foreach (self::$routes as $route) {
-            //echo $route['method'];
+
             if($_SERVER['REQUEST_METHOD'] == $route['httpMethod'])
             {
-                
+                if($route['route'] == '')
+                {
+                    $route['route'] = '/'.$route['route'];
+                }
+
                 self::$httpMethodNotAllowed = false;
 
                 $pattern = preg_replace('/\//', '\\/', $route['route']);
-                $pattern = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[^\/]+)', $pattern);
+                $pattern = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[^\/]+)', $pattern);             
                 $pattern = '/^' . $pattern . '$/';
-    
+                
                 if (preg_match($pattern, $uri, $matches)) {
                     self::$routeNotFound = false;
 
@@ -76,8 +80,7 @@ class Router{
                         }
                     }else{
                         self::$pathNotFound = true;
-                    }
-                        
+                    }                
                 }
                 else{
                     self::$routeNotFound = true;                 
@@ -117,7 +120,7 @@ class Router{
     {
         if (!empty($_SERVER['REQUEST_URI']))
         {
-            return trim($_SERVER['REQUEST_URI'], '/');
+            return $_SERVER['REQUEST_URI'];
         }
     }
 }
