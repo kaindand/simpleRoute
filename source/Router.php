@@ -33,7 +33,7 @@ class Router{
 
             if($_SERVER['REQUEST_METHOD'] == $route['httpMethod'])
             {
-                if($route['route'] == '')
+                if(substr($route['route'],0,1) != '/')
                 {
                     $route['route'] = '/'.$route['route'];
                 }
