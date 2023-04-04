@@ -11,7 +11,7 @@ class Router{
     private static $pathNotFound = false;
     private static $httpMethodNotAllowed = false;
 
-    public static function addRoute($httpMethod,$route,$actionData)
+    public function addRoute($httpMethod,$route,$actionData)
     {        
         $class = $actionData[0];
         $method = $actionData[1];
@@ -28,7 +28,7 @@ class Router{
     {
         $uri = $this->getURI();
         $params = [];
-        $result = null;
+
         foreach (self::$routes as $route) {
 
             if($_SERVER['REQUEST_METHOD'] == $route['httpMethod'])

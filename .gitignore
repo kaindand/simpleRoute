@@ -9,3 +9,4 @@ vendor/composer/autoload_psr4.php
 vendor/composer/autoload_namespaces.php
 vendor/composer/autoload_classmap.php
 vendor/autoload.php
+source/Test.php
