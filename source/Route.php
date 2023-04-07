@@ -21,7 +21,6 @@ class Route
             $this->route['route'] = '/'.$this->route['route'];
         }
 
-
         $pattern = preg_replace('/\//', '\\/', $this->route['route']);
         $pattern = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[^\/]+)', $pattern);             
         $pattern = '/^' . $pattern . '$/';  
@@ -29,14 +28,10 @@ class Route
         if($_SERVER['REQUEST_METHOD'] == $this->route['httpMethod'])
         {          
             if (preg_match($pattern, $uri, $matches)) {
-
+                
+                $this->addParameters($matches);
+                
                 $filePath = $this->route['class'].'.php';
-
-                foreach ($matches as $key => $value) {
-                    if (is_string($key)) {
-                        $this->parameters[$key] =  $value;
-                    }
-                }
 
                 if(file_exists($filePath))
                 {
@@ -75,6 +70,14 @@ class Route
         else
         {
             return "httpMethodNotAllowed";
+        }
+    }
+    private function addParameters($matches)
+    {
+        foreach ($matches as $key => $value) {
+            if (is_string($key)) {
+                $this->parameters[$key] =  $value;
+            }
         }
     }
     private function getURI()
