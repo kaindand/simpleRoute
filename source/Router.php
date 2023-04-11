@@ -17,27 +17,18 @@ class Router{
     {        
         $class = $actionData[0];
         $method = $actionData[1];
-        
-        $this->routes[] = 
-        [
-            'httpMethod' => $httpMethod,
-            'route' => $route,
-            'class' => $class,
-            'method' => $method,          
-        ];
+        $temp = new Route($route,$httpMethod,$class,$method);
+        array_push($this->routes,$temp);
 
-        return $this;
+        return $temp;
     }
-
     public function dispatch()
     {
-        foreach ($this->routes as $route) {
-
+        foreach ($this->routes as $route) 
+        {
             $this->exception = '';
-
-            $r = new Route($route);
-
-            $this->exception = $r->match();
+            
+            $this->exception = $route->match();
         }
         $this->handlerException(); 
     }
@@ -53,6 +44,8 @@ class Router{
     public function get($route,$actionData)
     {
         $this->addRoute('GET',$route,$actionData);
+
+        return $this;
     }
 
     public function post($route,$actionData)
