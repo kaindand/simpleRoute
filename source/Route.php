@@ -6,7 +6,6 @@ class Route
 {
     private $route;
 
-    private $name;
 
     private $httpMethod;
 
@@ -22,7 +21,6 @@ class Route
         $this->httpMethod = $httpMethod;
         $this->class      = $class;
         $this->method     = $method;
-        $this->name       = $name;
         $this->parameters = $parameters;
     }
 
@@ -85,10 +83,7 @@ class Route
             return "httpMethodNotAllowed";
         }
     }
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
+
     private function setParameters($matches)
     {
         foreach ($matches as $key => $value) {
@@ -105,10 +100,6 @@ class Route
         }
     }
 
-    public function getName()
-    {
-        return $this->name;
-    }
     public function getRoute()
     {
         return $this->route;

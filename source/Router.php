@@ -43,41 +43,16 @@ class Router{
 
     public function get($route,$actionData)
     {
-        $this->addRoute('GET',$route,$actionData);
+        $term = $this->addRoute('GET',$route,$actionData);
 
-        return $this;
+        return $term;
     }
 
     public function post($route,$actionData)
     {
-        $this->addRoute('POST',$route,$actionData);
-    }
+        $term = $this->addRoute('POST',$route,$actionData);
 
-    public function put($route,$actionData)
-    {
-        $this->addRoute('PUT',$route,$actionData);
-    }
-
-    public function delete($route,$actionData)
-    {
-        $this->addRoute('DELETE',$route,$actionData);
-    }
-
-    public function getInfo($key1 = null,$key2 = null)
-    {
-        if($key1 == null && $key2 == null)
-        {
-            return $this->routes;
-        }
-        else if($key1 != null && $key2 != null)
-        {
-            return $this->routes[$key1][$key2];
-        }
-        else if($key1 != null)
-        {
-            return $this->routes[$key1];
-        }
-        
+        return $term;
     }
 }
 ?> 
