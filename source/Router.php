@@ -1,8 +1,9 @@
 <?php
-namespace Source;
+namespace SimpleRoute;
 
-use Source\Exception\BadRouteException;
-use Source\Route;
+use SimpleRoute\Exception\BadRouteException;
+use SimpleRoute\Route;
+
 class Router{
 
     private $routes = [];

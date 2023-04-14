@@ -1,5 +1,5 @@
 <?php
-namespace Source\Exception;
+namespace SimpleRoute\Exception;
 
 use LogicException;
 

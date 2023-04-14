@@ -1,11 +1,10 @@
 <?php
 
-namespace Source;
+namespace SimpleRoute;
 
 class Route
 {
     private $route;
-
 
     private $httpMethod;
 
@@ -26,23 +25,22 @@ class Route
 
     public function match()
     {
-        $uri = $this->getURI();
+        $uri = $_SERVER['REQUEST_URI'];
         if(substr($this->route,0,1) != '/')
         {
             $this->route = '/'.$this->route;
         }
 
         $pattern = preg_replace('/\//', '\\/', $this->route);
-        $pattern = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[^\/]+)', $pattern);             
+        $pattern = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[^\/]+)', $pattern);             
         $pattern = '/^' . $pattern . '$/';  
-
-        if($_SERVER['REQUEST_METHOD'] == $this->httpMethod)
-        {          
-            if (preg_match($pattern, $uri, $matches)) {
-                
+        echo $pattern;
+        if (preg_match($pattern, $uri, $matches)) {  
+            if($_SERVER['REQUEST_METHOD'] == $this->httpMethod)
+            { 
                 $this->setParameters($matches);
                 
-                $filePath = $this->class.'.php';
+                $filePath = 'source/Aboba'.'.php';
 
                 if(file_exists($filePath))
                 {
@@ -75,12 +73,12 @@ class Route
             }
             else
             {     
-                return "routeNotFound";           
+                return "httpMethodNotAllowed";           
             }
         }
         else
         {
-            return "httpMethodNotAllowed";
+            return "routeNotFound";
         }
     }
 
@@ -90,13 +88,6 @@ class Route
             if (is_string($key)) {
                 $this->parameters[$key] =  $value;
             }
-        }
-    }
-    private function getURI()
-    {
-        if (!empty($_SERVER['REQUEST_URI']))
-        {
-            return $_SERVER['REQUEST_URI'];
         }
     }
 
