@@ -2,6 +2,9 @@
 
 namespace SimpleRoute;
 
+
+use SimpleRoute\Exception\RegexException;
+
 class Route
 {
     private $route;
@@ -14,7 +17,7 @@ class Route
     
     private $parameters = [];
 
-    public function __construct($route,$httpMethod,$class,$method,$name = '',$parameters = [])
+    public function __construct($route,$httpMethod,$class,$method,$parameters = [])
     {
         $this->route      = $route;
         $this->httpMethod = $httpMethod;
@@ -34,13 +37,11 @@ class Route
         $pattern = preg_replace('/\//', '\\/', $this->route);
         $pattern = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[^\/]+)', $pattern);             
         $pattern = '/^' . $pattern . '$/';  
-        echo $pattern;
-        if (preg_match($pattern, $uri, $matches)) {  
+
+        if (preg_match($pattern, $uri)) {  
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod)
-            { 
-                $this->setParameters($matches);
-                
-                $filePath = 'source/Aboba'.'.php';
+            {   
+                $filePath = 'source/Test'.'.php';
 
                 if(file_exists($filePath))
                 {
@@ -81,16 +82,24 @@ class Route
             return "routeNotFound";
         }
     }
-
-    private function setParameters($matches)
+    
+    public function where($regexes)
     {
-        foreach ($matches as $key => $value) {
-            if (is_string($key)) {
-                $this->parameters[$key] =  $value;
+        //echo $this->route;
+        if($this->parameters != null)
+        {
+            foreach($regexes as $parameter => $regex)
+            {
+                if($this->parameters[$parameter])
+                {
+                    if(!preg_match('/'.$regex.'/',$this->parameters[$parameter]))
+                    {
+                        throw new RegexException('regexNotAllowed');
+                    }
+                }
             }
         }
     }
-
     public function getRoute()
     {
         return $this->route;

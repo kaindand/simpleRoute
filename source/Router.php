@@ -18,7 +18,11 @@ class Router{
     {        
         $class = $actionData[0];
         $method = $actionData[1];
-        $temp = new Route($route,$httpMethod,$class,$method);
+
+        
+        $parameters = $this->setParameters($route);
+        
+        $temp = new Route($route,$httpMethod,$class,$method,$parameters);
         array_push($this->routes,$temp);
 
         return $temp;
@@ -42,18 +46,35 @@ class Router{
         }
     }
 
+    private function setParameters($route)
+    {
+        $pattern = preg_replace('/\//', '\\/', $route);
+        $pattern = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[^\/]+)', $pattern);             
+        $pattern = '/^' . $pattern . '$/';  
+
+        if (preg_match($pattern, $_SERVER['REQUEST_URI'], $matches)) {  
+            foreach ($matches as $key => $value) {
+                if (is_string($key)) {
+                    $parameters[$key] =  $value;
+                    
+                    return $parameters;
+                }
+            }
+        }
+    }
+
     public function get($route,$actionData)
     {
-        $term = $this->addRoute('GET',$route,$actionData);
+        $temp = $this->addRoute('GET',$route,$actionData);
 
-        return $term;
+        return $temp;
     }
 
     public function post($route,$actionData)
     {
-        $term = $this->addRoute('POST',$route,$actionData);
+        $temp = $this->addRoute('POST',$route,$actionData);
 
-        return $term;
+        return $temp;
     }
 }
 ?> 
