@@ -94,10 +94,6 @@ class Route
                 }
             }
         }
-        else
-        {
-            throw new ParametersException('parametersMissing');
-        }
     }
     public function getRoute()
     {

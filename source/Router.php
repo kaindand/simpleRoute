@@ -2,10 +2,14 @@
 namespace SimpleRoute;
 
 use SimpleRoute\Exception\BadRouteException;
+use SimpleRoute\Traits;
 use SimpleRoute\Route;
+use SimpleRoute\Traits\RouteTrait;
 
 class Router{
 
+    use RouteTrait;
+    
     private $routes = [];
     private $exception = "";
 
@@ -26,26 +30,12 @@ class Router{
 
         $route = preg_replace('/\//', '\\/', $route);
         $route = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[a-zA-Z0-9]+)', $route);             
-        $route = '/^' . $route. '$/';  
+        $route = '/' . $route. '/';  
 
         $parameters = $this->setParameters($route);
 
         $temp = new Route($route,$httpMethod,$class,$method,$parameters);
         array_push($this->routes,$temp);
-
-        return $temp;
-    }
-    
-    public function get($route,$actionData)
-    {
-        $temp = $this->addRoute('GET',$route,$actionData);
-
-        return $temp;
-    }
-
-    public function post($route,$actionData)
-    {
-        $temp = $this->addRoute('POST',$route,$actionData);
 
         return $temp;
     }
