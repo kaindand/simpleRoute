@@ -3,7 +3,7 @@ namespace SimpleRoute\Exception;
 
 use LogicException;
 
-class RegexException extends LogicException
+class ParametersException extends LogicException
 {
     
 }

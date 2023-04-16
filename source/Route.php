@@ -3,7 +3,7 @@
 namespace SimpleRoute;
 
 
-use SimpleRoute\Exception\RegexException;
+use SimpleRoute\Exception\ParametersException;
 
 class Route
 {
@@ -29,19 +29,11 @@ class Route
     public function match()
     {
         $uri = $_SERVER['REQUEST_URI'];
-        if(substr($this->route,0,1) != '/')
-        {
-            $this->route = '/'.$this->route;
-        }
 
-        $pattern = preg_replace('/\//', '\\/', $this->route);
-        $pattern = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[^\/]+)', $pattern);             
-        $pattern = '/^' . $pattern . '$/';  
-
-        if (preg_match($pattern, $uri)) {  
+        if (preg_match($this->route, $uri)) {  
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod)
             {   
-                $filePath = 'source/Test'.'.php';
+                $filePath = 'source/Aboba'.'.php';
 
                 if(file_exists($filePath))
                 {
@@ -85,7 +77,6 @@ class Route
     
     public function where($regexes)
     {
-        //echo $this->route;
         if($this->parameters != null)
         {
             foreach($regexes as $parameter => $regex)
@@ -94,10 +85,18 @@ class Route
                 {
                     if(!preg_match('/'.$regex.'/',$this->parameters[$parameter]))
                     {
-                        throw new RegexException('regexNotAllowed');
+                        throw new ParametersException('regexNotAllowed');
                     }
                 }
+                else
+                {
+                    throw new ParametersException('parameterNotFound');
+                }
             }
+        }
+        else
+        {
+            throw new ParametersException('parametersMissing');
         }
     }
     public function getRoute()
