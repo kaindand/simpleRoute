@@ -7,6 +7,8 @@ use SimpleRoute\Exception\ParametersException;
 
 class Route
 {
+    private $prefix;
+
     private $route;
 
     private $httpMethod;
@@ -17,13 +19,14 @@ class Route
     
     private $parameters = [];
 
-    public function __construct($route,$httpMethod,$class,$method,$parameters = [])
+    public function __construct($route,$httpMethod,$class,$method,$prefix = '',$parameters = [])
     {
         $this->route      = $route;
         $this->httpMethod = $httpMethod;
         $this->class      = $class;
         $this->method     = $method;
         $this->parameters = $parameters;
+        $this->prefix     = $prefix;
     }
 
     public function match()
@@ -114,6 +117,10 @@ class Route
     public function getParameters()
     {
         return $this->parameters;
+    }
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
     
 }

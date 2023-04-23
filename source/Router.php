@@ -2,39 +2,47 @@
 namespace SimpleRoute;
 
 use SimpleRoute\Exception\BadRouteException;
-use SimpleRoute\Traits;
-use SimpleRoute\Route;
 use SimpleRoute\Traits\RouteTrait;
+use SimpleRoute\Route;
 
 class Router{
 
     use RouteTrait;
     
     private $routes = [];
-    private $exception = "";
+    private $currentPreffix = '';
+    private $exception = '';
 
-    public function __construct($routes = [],$exception=''){
-        $this->routes = $routes;
-        $this->exception = $exception;
+    public function __construct($routes = [],$exception='', $currentPreffix = ''){
+        $this->currentPreffix = $currentPreffix;
+        $this->routes         = $routes;
+        $this->exception      = $exception;
     }
+    
+    public function group($prefix,$callback)
+    {
+        $this->currentPreffix = $prefix;
 
+        $callback($this);
+    }
     public function addRoute($httpMethod,$route,$actionData)
-    {        
+    {       
         $class = $actionData[0];
         $method = $actionData[1];
 
+  
         if(substr($route,0,1) != '/')
         {
             $route = '/'.$route;
         }
 
         $route = preg_replace('/\//', '\\/', $route);
-        $route = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[a-zA-Z0-9]+)', $route);             
+        $route = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[^\/]+)',$route);             
         $route = '/' . $route. '/';  
 
         $parameters = $this->setParameters($route);
 
-        $temp = new Route($route,$httpMethod,$class,$method,$parameters);
+        $temp = new Route($route,$httpMethod,$class,$method,$this->currentPreffix,$parameters);
         array_push($this->routes,$temp);
 
         return $temp;
