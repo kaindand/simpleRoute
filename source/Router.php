@@ -4,24 +4,32 @@ namespace SimpleRoute;
 use SimpleRoute\Exception\BadRouteException;
 use SimpleRoute\Traits\RouteTrait;
 use SimpleRoute\Route;
+use SimpleRoute\Group;
 
 class Router{
 
     use RouteTrait;
     
     private $routes = [];
-    private $currentPreffix = '';
+
+    private $groups = [];
+
+    private $currentParentGroup;
+
     private $exception = '';
 
-    public function __construct($routes = [],$exception='', $currentPreffix = ''){
-        $this->currentPreffix = $currentPreffix;
-        $this->routes         = $routes;
-        $this->exception      = $exception;
+    public function __construct($routes = [],$groups = [],$currentParentGroup = '',$exception=''){
+        $this->routes             = $routes;
+        $this->groups             = $groups;
+        $this->currentParentGroup = $currentParentGroup;
+        $this->exception          = $exception;
     }
     
-    public function group($prefix,$callback)
+    public function addGroup($callback)
     {
-        $this->currentPreffix = $prefix;
+        $group = new Group($this->currentParentGroup);
+
+        $this->currentParentGroup = $group;
 
         $callback($this);
     }
@@ -42,7 +50,7 @@ class Router{
 
         $parameters = $this->setParameters($route);
 
-        $temp = new Route($route,$httpMethod,$class,$method,$this->currentPreffix,$parameters);
+        $temp = new Route($route,$httpMethod,$class,$method,$this->currentParentGroup,$parameters);
         array_push($this->routes,$temp);
 
         return $temp;

@@ -7,8 +7,7 @@ use SimpleRoute\Exception\ParametersException;
 
 class Route
 {
-    private $prefix;
-
+    private $parentGroups = [];
     private $route;
 
     private $httpMethod;
@@ -19,24 +18,24 @@ class Route
     
     private $parameters = [];
 
-    public function __construct($route,$httpMethod,$class,$method,$prefix = '',$parameters = [])
+    public function __construct($route,$httpMethod,$class,$method,$parentGroups = [],$parameters = [])
     {
         $this->route      = $route;
         $this->httpMethod = $httpMethod;
         $this->class      = $class;
         $this->method     = $method;
         $this->parameters = $parameters;
-        $this->prefix     = $prefix;
+        $this->parentGroups = $parentGroups;
     }
 
     public function match()
     {
         $uri = $_SERVER['REQUEST_URI'];
 
-        if (preg_match($this->route, $uri)) {  
+        if (preg_match_all($this->route, $uri)) {  
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod)
             {   
-                $filePath = 'source/Aboba'.'.php';
+                $filePath = 'source/Test'.'.php';
 
                 if(file_exists($filePath))
                 {
@@ -118,9 +117,18 @@ class Route
     {
         return $this->parameters;
     }
-    public function getPrefix()
+    public function getParentGroup()
     {
-        return $this->prefix;
+        return $this->parentGroup;
     }
     
+    private function setPrefix()
+    {
+        if($this->parentGroup->getParentGroup())
+        {
+
+            $this->setPrefix();
+        }
+        return null;
+    }
 }
