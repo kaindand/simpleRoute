@@ -2,12 +2,17 @@
 
 namespace SimpleRoute;
 
-
 use SimpleRoute\Exception\ParametersException;
+use SimpleRoute\Traits\GetInfoRouteTrait;
 
 class Route
 {
+    use GetInfoRouteTrait;
+
     private $parentGroups = [];
+    
+    private $prefix;
+
     private $route;
 
     private $httpMethod;
@@ -18,13 +23,14 @@ class Route
     
     private $parameters = [];
 
-    public function __construct($route,$httpMethod,$class,$method,$parentGroups = [],$parameters = [])
+    public function __construct($route,$httpMethod,$class,$method,$parentGroups = [],$prefix = '',$parameters = [])
     {
         $this->route      = $route;
         $this->httpMethod = $httpMethod;
         $this->class      = $class;
         $this->method     = $method;
         $this->parameters = $parameters;
+        $this->prefix = $prefix;
         $this->parentGroups = $parentGroups;
     }
 
@@ -35,7 +41,7 @@ class Route
         if (preg_match_all($this->route, $uri)) {  
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod)
             {   
-                $filePath = 'source/Test'.'.php';
+                $filePath = 'source/Aboba'.'.php';
 
                 if(file_exists($filePath))
                 {
@@ -96,39 +102,5 @@ class Route
                 }
             }
         }
-    }
-    public function getRoute()
-    {
-        return $this->route;
-    }
-    public function getHttpMethod()
-    {
-        return $this->httpMethod;
-    }
-    public function getClass()
-    {
-        return $this->class;
-    }
-    public function getMethod()
-    {
-        return $this->method;
-    }
-    public function getParameters()
-    {
-        return $this->parameters;
-    }
-    public function getParentGroup()
-    {
-        return $this->parentGroup;
-    }
-    
-    private function setPrefix()
-    {
-        if($this->parentGroup->getParentGroup())
-        {
-
-            $this->setPrefix();
-        }
-        return null;
     }
 }

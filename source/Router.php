@@ -2,34 +2,35 @@
 namespace SimpleRoute;
 
 use SimpleRoute\Exception\BadRouteException;
-use SimpleRoute\Traits\RouteTrait;
+use SimpleRoute\Traits\AddRouteTrait;
 use SimpleRoute\Route;
 use SimpleRoute\Group;
 
 class Router{
 
-    use RouteTrait;
+    use AddRouteTrait;
     
     private $routes = [];
 
-    private $groups = [];
+    private $currentPrefix = [];
 
-    private $currentParentGroup;
+    private $currentParentGroups = [];
 
     private $exception = '';
 
-    public function __construct($routes = [],$groups = [],$currentParentGroup = '',$exception=''){
+    public function __construct($routes = [],$currentPrefix = '',$currentParentGroups = [],$exception=''){
         $this->routes             = $routes;
-        $this->groups             = $groups;
-        $this->currentParentGroup = $currentParentGroup;
+        $this->currentPrefix             = $currentPrefix;
+        $this->currentParentGroups = $currentParentGroups;
         $this->exception          = $exception;
     }
     
-    public function addGroup($callback)
+    public function addGroup($prefix,$callback)
     {
-        $group = new Group($this->currentParentGroup);
+        $group = new Group($prefix,$this->currentParentGroups);
 
-        $this->currentParentGroup = $group;
+        array_push($this->currentParentGroups,$group);
+        $this->currentPrefix .= $prefix;
 
         $callback($this);
     }
@@ -38,7 +39,8 @@ class Router{
         $class = $actionData[0];
         $method = $actionData[1];
 
-  
+        $route = $this->currentPrefix.$route;
+
         if(substr($route,0,1) != '/')
         {
             $route = '/'.$route;
@@ -50,7 +52,7 @@ class Router{
 
         $parameters = $this->setParameters($route);
 
-        $temp = new Route($route,$httpMethod,$class,$method,$this->currentParentGroup,$parameters);
+        $temp = new Route($route,$httpMethod,$class,$method,$this->currentParentGroups,$this->currentPrefix,$parameters);
         array_push($this->routes,$temp);
 
         return $temp;
@@ -80,7 +82,6 @@ class Router{
         }
         return [];
     }
-
     private function handlerException()
     {
         if($this->exception != '')

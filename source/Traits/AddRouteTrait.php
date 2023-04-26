@@ -2,7 +2,7 @@
 
 namespace SimpleRoute\Traits;
 
-trait RouteTrait
+trait AddRouteTrait
 {
     public function get($route,$actionData)
     {
