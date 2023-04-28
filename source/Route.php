@@ -39,40 +39,44 @@ class Route
         if (preg_match_all($this->route, $uri)) {  
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod)
             {   
-   
-                    // $filePath = 'source/Aboba'.'.php';
+                if(is_array($this->handler))
+                {
+                    $filePath = 'source/Aboba'.'.php';
 
-                    // if(file_exists($filePath))
-                    // {
-                    //     include_once $filePath;
+                    if(file_exists($filePath))
+                    {
+                        include_once $filePath;
+                    
+                        if(class_exists($this->handler[0],false))
+                        {
+                            if(method_exists($this->handler[0], $this->handler[1]))
+                            {
+                                $object = new $this->handler[0];
     
-                    //     if(class_exists($this->$handler[0],false))
-                    //     {
-                    //         if(method_exists($this->$handler[0], $this->$this->$handler[1]))
-                    //         {
-                    //             $object = new $$this->$handler[0];
+                                call_user_func_array([$object,$this->handler[1]],$this->parameters);
     
-                    //             call_user_func_array([$object,$this->$handler[1]],$this->parameters);
-    
-                    //             exit;
-                    //         }
-                    //         else
-                    //         {            
-                    //             return "methodNotFound";          
-                    //         }
-                    //     }
-                    //     else
-                    //     {
-                    //         return "classNotFound";
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //     return "pathNotFound";
-                    // }  
+                                exit;
+                            }
+                            else
+                            {            
+                                return "methodNotFound";          
+                            }
+                        }
+                        else
+                        {
+                            return "classNotFound";
+                        }
+                    }
+                    else
+                    {
+                        return "pathNotFound";
+                    }  
+                }
+                else{
                     $action = $this->handler;
-             
+                    
                     return $action();
+                }
             }
             else
             {     

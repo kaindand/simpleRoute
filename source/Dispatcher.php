@@ -2,7 +2,6 @@
 namespace SimpleRoute;
 
 use SimpleRoute\Exception\BadRouteException;
-use SimpleRoute\Route;
 
 class Dispatcher{
 
@@ -21,9 +20,13 @@ class Dispatcher{
         {   
             $this->exception = '';
 
-            $this->exception = $route->match();      
+            $result = $route->match();  
+            
+            $this->exception = $result;
         }
         $this->handlerException();
+
+        return $result;
     }
     public function generate()
     {
