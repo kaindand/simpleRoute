@@ -1,14 +1,14 @@
 <?php
+
 namespace SimpleRoute;
 
-use SimpleRoute\Exception\BadRouteException;
 use SimpleRoute\Traits\AddRouteTrait;
 use SimpleRoute\Route;
 use SimpleRoute\Group;
 
-class Router{
-
-    use AddRouteTrait;
+class RouteCollector
+{
+    //use AddRouteTrait;
     
     private $routes = [];
 
@@ -16,13 +16,11 @@ class Router{
 
     private $currentParentGroups = [];
 
-    private $exception = '';
 
-    public function __construct($routes = [],$currentPrefix = '',$currentParentGroups = [],$exception=''){
-        $this->routes             = $routes;
-        $this->currentPrefix             = $currentPrefix;
+    public function __construct(array $routes = [], string $currentPrefix = '', array $currentParentGroups = []){
+        $this->routes              = $routes;
+        $this->currentPrefix       = $currentPrefix;
         $this->currentParentGroups = $currentParentGroups;
-        $this->exception          = $exception;
     }
     
     public function addGroup($prefix,$callback)
@@ -34,11 +32,9 @@ class Router{
 
         $callback($this);
     }
-    public function addRoute($httpMethod,$route,$actionData)
-    {       
-        $class = $actionData[0];
-        $method = $actionData[1];
 
+    public function addRoute($httpMethod,$route,$handler)
+    {       
         $route = $this->currentPrefix.$route;
 
         if(substr($route,0,1) != '/')
@@ -52,21 +48,16 @@ class Router{
 
         $parameters = $this->setParameters($route);
 
-        $temp = new Route($route,$httpMethod,$class,$method,$this->currentParentGroups,$this->currentPrefix,$parameters);
-        array_push($this->routes,$temp);
+        $route = new Route($route,$httpMethod,$handler,$this->currentParentGroups,$this->currentPrefix,$parameters);
+        array_push($this->routes,$route);
 
-        return $temp;
+        return $route;
+        
     }
 
-    public function dispatch()
+    public function getRoutes()
     {
-        foreach ($this->routes as $route) 
-        {
-            $this->exception = '';
-            
-            $this->exception = $route->match();
-        }
-        $this->handlerException(); 
+        return $this->routes;
     }
 
     private function setParameters($route)
@@ -82,12 +73,4 @@ class Router{
         }
         return [];
     }
-    private function handlerException()
-    {
-        if($this->exception != '')
-        {
-            throw new BadRouteException($this->exception);
-        }
-    }
 }
-?> 
