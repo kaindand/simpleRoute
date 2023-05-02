@@ -10,7 +10,7 @@ class Route
 {
     use GetInfoRouteTrait;
 
-    private $parentGroups = [];
+    private $parentGroups;
     
     private $prefix;
 
@@ -20,9 +20,9 @@ class Route
 
     private $handler;
     
-    private $parameters = [];
+    private $parameters;
 
-    public function __construct($route,$httpMethod,$handler,array $parentGroups = [],string $prefix = '', array $parameters = [])
+    public function __construct($route,$httpMethod,$handler,array $parentGroups = [],string $prefix = '', array $parameters = null)
     {
         $this->route        = $route;
         $this->httpMethod   = $httpMethod;
@@ -53,7 +53,7 @@ class Route
                             {
                                 $object = new $this->handler[0];
     
-                                call_user_func_array([$object,$this->handler[1]],$this->parameters);
+                                call_user_func_array([$object,$this->handler[1]],[]);
     
                                 exit;
                             }
@@ -88,7 +88,7 @@ class Route
             return "routeNotFound";
         }
     }
-    public function where($regexes)
+    public function setRegex($regexes)
     {
         if($this->parameters != null)
         {

@@ -5,6 +5,7 @@ namespace SimpleRoute;
 use SimpleRoute\Traits\AddRouteTrait;
 use SimpleRoute\Route;
 use SimpleRoute\Group;
+use SimpleRoute\RouteParser;
 
 class RouteCollector
 {
@@ -35,20 +36,10 @@ class RouteCollector
 
     public function addRoute($httpMethod,$route,$handler)
     {       
-        $route = $this->currentPrefix.$route;
-
-        if(substr($route,0,1) != '/')
-        {
-            $route = '/'.$route;
-        }
-
-        $route = preg_replace('/\//', '\\/', $route);
-        $route = preg_replace('/\{([a-z]+)?\}/', '(?P<\1>[^\/]+)',$route);             
-        $route = '/' . $route. '/';  
-
-        $parameters = $this->setParameters($route);
-
-        $route = new Route($route,$httpMethod,$handler,$this->currentParentGroups,$this->currentPrefix,$parameters);
+        $parser = new RouteParser();
+        $routeDatas = $parser->parse($route,$this->currentPrefix);
+        
+        $route = new Route($routeDatas['route'],$httpMethod,$handler,$this->currentParentGroups,$this->currentPrefix,$routeDatas['parameters']);
         array_push($this->routes,$route);
 
         return $route;
@@ -60,17 +51,4 @@ class RouteCollector
         return $this->routes;
     }
 
-    private function setParameters($route)
-    {
-        if (preg_match($route, $_SERVER['REQUEST_URI'], $matches)) {  
-            foreach ($matches as $key => $value) {
-                if (is_string($key)) {
-                    $parameters[$key] =  $value;
-                    
-                    return $parameters;
-                }
-            }
-        }
-        return [];
-    }
 }

@@ -28,10 +28,6 @@ class Dispatcher{
 
         return $result;
     }
-    public function generate()
-    {
-        
-    }
     private function handlerException()
     {
         if($this->exception != ''){
