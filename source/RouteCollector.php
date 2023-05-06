@@ -2,48 +2,44 @@
 
 namespace SimpleRoute;
 
-use SimpleRoute\Traits\AddRouteTrait;
+use SimpleRoute\Traits\RouteTrait;
 use SimpleRoute\Route;
 use SimpleRoute\Group;
 use SimpleRoute\RouteParser;
 
 class RouteCollector
 {
-    //use AddRouteTrait;
-    
+    use RouteTrait;
+
     private $routes = [];
 
     private $currentPrefix = [];
 
-    private $currentParentGroups = [];
 
 
-    public function __construct(array $routes = [], string $currentPrefix = '', array $currentParentGroups = []){
+    public function __construct(array $routes = [], string $currentPrefix = '')
+    {
         $this->routes              = $routes;
         $this->currentPrefix       = $currentPrefix;
-        $this->currentParentGroups = $currentParentGroups;
     }
-    
-    public function addGroup($prefix,$callback)
-    {
-        $group = new Group($prefix,$this->currentParentGroups);
 
-        array_push($this->currentParentGroups,$group);
+    public function group($prefix, $callback)
+    {
         $this->currentPrefix .= $prefix;
 
         $callback($this);
     }
 
-    public function addRoute($httpMethod,$route,$handler)
-    {       
+    public function addRoute($httpMethod, $route, $handler, $regex = [])
+    {
         $parser = new RouteParser();
-        $routeDatas = $parser->parse($route,$this->currentPrefix);
-        
-        $route = new Route($routeDatas['route'],$httpMethod,$handler,$this->currentParentGroups,$this->currentPrefix,$routeDatas['parameters']);
-        array_push($this->routes,$route);
+        $routeDatas = $parser->parse($route, $this->currentPrefix, $regex);
+
+        $route = new Route($routeDatas['route'], $httpMethod, $handler, $this->currentPrefix, $routeDatas['parameters']);
+        array_push($this->routes, $route);
 
         return $route;
-        
+
     }
 
     public function getRoutes()

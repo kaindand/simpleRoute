@@ -9,8 +9,6 @@ use SimpleRoute\Traits\GetInfoRouteTrait;
 class Route
 {
     use GetInfoRouteTrait;
-
-    private $parentGroups;
     
     private $prefix;
 
@@ -22,14 +20,13 @@ class Route
     
     private $parameters;
 
-    public function __construct($route,$httpMethod,$handler,array $parentGroups = [],string $prefix = '', array $parameters = null)
+    public function __construct($route,$httpMethod,$handler,string $prefix = '', array $parameters = null)
     {
         $this->route        = $route;
         $this->httpMethod   = $httpMethod;
         $this->handler      = $handler;
         $this->parameters   = $parameters;
         $this->prefix       = $prefix;
-        $this->parentGroups = $parentGroups;
     }
     
     public function match()
@@ -53,7 +50,7 @@ class Route
                             {
                                 $object = new $this->handler[0];
     
-                                call_user_func_array([$object,$this->handler[1]],[]);
+                                call_user_func_array([$object,$this->handler[1]],$this->parameters);
     
                                 exit;
                             }
@@ -87,26 +84,5 @@ class Route
         {
             return "routeNotFound";
         }
-    }
-    public function setRegex($regexes)
-    {
-        if($this->parameters != null)
-        {
-            foreach($regexes as $parameter => $regex)
-            {
-                if($this->parameters[$parameter])
-                {
-                    if(!preg_match('/'.$regex.'/',$this->parameters[$parameter]))
-                    {
-                        throw new ParametersException('regexNotAllowed');
-                    }
-                }
-                else
-                {
-                    throw new ParametersException('parameterNotFound');
-                }
-            }
-        }
-        return $this;
     }
 }

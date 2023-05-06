@@ -1,14 +1,15 @@
 <?php
+
 namespace SimpleRoute;
 
 use SimpleRoute\Exception\BadRouteException;
 
-class Dispatcher{
-
+class Dispatcher
+{
     private $exception;
     private $routes;
-    
-    public function __construct(RouteCollector $routes,$exception = '')
+
+    public function __construct(RouteCollector $routes, $exception = '')
     {
         $this->exception = $exception;
         $this->routes    = $routes;
@@ -16,12 +17,11 @@ class Dispatcher{
 
     public function dispatch()
     {
-        foreach ($this->routes->getRoutes() as $route) 
-        {   
+        foreach ($this->routes->getRoutes() as $route) {
             $this->exception = '';
 
-            $result = $route->match();  
-            
+            $result = $route->match();
+
             $this->exception = $result;
         }
         $this->handlerException();
@@ -30,7 +30,7 @@ class Dispatcher{
     }
     private function handlerException()
     {
-        if($this->exception != ''){
+        if($this->exception != '') {
             throw new BadRouteException($this->exception);
         }
     }

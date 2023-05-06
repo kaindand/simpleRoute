@@ -4,7 +4,7 @@ namespace SimpleRoute;
 
 class RouteParser
 {
-    public function parse($route, $prefix = '')
+    public function parse($route, $prefix = '', $regex = '')
     {
         $route = $prefix.$route;
 
@@ -14,9 +14,9 @@ class RouteParser
 
         $pattern = preg_replace('/\//', '\\/', $route);
 
-        $pattern = preg_replace_callback('/\{([a-z]+)?\}/', function ($matches) {
+        $pattern = preg_replace_callback('/\{([a-z]+)?\}/', function ($matches) use ($regex) {
             $argument = $matches[1];
-            $replace = '[^}]+';
+            $replace = $regex[$argument] ?? '[^}]+';
             return '(?P<'.$argument.'>'.$replace.')';
         }, $pattern);
 
