@@ -4,7 +4,6 @@ namespace SimpleRoute;
 
 use SimpleRoute\Traits\RouteTrait;
 use SimpleRoute\Route;
-use SimpleRoute\Group;
 use SimpleRoute\RouteParser;
 
 class RouteCollector
@@ -14,8 +13,6 @@ class RouteCollector
     private $routes = [];
 
     private $currentPrefix = [];
-
-
 
     public function __construct(array $routes = [], string $currentPrefix = '')
     {
