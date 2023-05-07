@@ -6,6 +6,12 @@
         "router"
     ],
     "type": "router",
+    "authors": [
+      {
+          "name": "Yan Yagellon",
+          "email": "kindand06@gmail.com"
+      }
+    ],
     "minimum-stability": "dev",
     "require": {
       "php": ">=7.4.0"
