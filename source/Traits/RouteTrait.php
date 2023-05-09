@@ -4,45 +4,33 @@ namespace SimpleRoute\Traits;
 
 trait RouteTrait
 {
-    public function get($route,$actionData)
+    public function get($httpMethod, $route, $handler, array $regex = [], string $name = '')
     {
-        $temp = $this->addRoute('GET',$route,$actionData);
-
-        return $temp;
+        $this->addRoute('GET', $route, $handler, $regex, $name);
     }
 
-    public function post($route,$actionData)
+    public function post($route, $handler, array $regex = [], string $name = '')
     {
-        $temp = $this->addRoute('POST',$route,$actionData);
-
-        return $temp;
+        $this->addRoute('POST', $route, $handler, $regex, $name);
     }
 
-    public function put($route,$actionData)
+    public function put($route, $handler, array $regex = [], string $name = '')
     {
-        $temp = $this->addRoute('PUT',$route,$actionData);
-
-        return $temp;
+        $this->addRoute('PUT', $route, $handler, $regex, $name);
     }
 
-    public function patch($route,$actionData)
+    public function patch($route, $handler, array $regex = [], string $name = '')
     {
-        $temp = $this->addRoute('PATCH',$route,$actionData);
-
-        return $temp;
+        $this->addRoute('PATCH', $route, $handler, $regex, $name);
     }
 
-    public function delete($route,$actionData)
+    public function delete($route, $handler, array $regex = [], string $name = '')
     {
-        $temp = $this->addRoute('DELETE',$route,$actionData);
-
-        return $temp;
+        $this->addRoute('DELETE', $route, $handler, $regex, $name);
     }
-    
-    public function any($route,$actionData)
-    {
-        $temp = $this->addRoute($_SERVER['REQUEST_METHOD'],$route,$actionData);
 
-        return $temp;
-    }    
+    public function any($route, $handler, array $regex = [], string $name = '')
+    {
+        $this->addRoute($_SERVER['REQUEST_METHOD'], $route, $handler, $regex, $name);
+    }
 }

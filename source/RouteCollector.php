@@ -12,32 +12,43 @@ class RouteCollector
 
     private $routes = [];
 
-    private $currentPrefix = [];
+    private $currentPrefix;
 
-    public function __construct(array $routes = [], string $currentPrefix = '')
+    private $currentName;
+
+    public function __construct(array $routes = [], string $currentPrefix = '', string $currentName = '')
     {
         $this->routes              = $routes;
         $this->currentPrefix       = $currentPrefix;
+        $this->$currentName        = $currentName;
     }
 
-    public function group($prefix, $callback)
+    public function group($callback, string $prefix = '', string $name = '')
     {
+        if(substr($prefix, -1) != '/') {
+            $prefix = $prefix.'/';
+        }
+
         $this->currentPrefix .= $prefix;
+        
+        $this->currentName .= $name;
 
         $callback($this);
     }
 
-    public function addRoute($httpMethod, $route, $handler, $regex = [])
+    public function addRoute($httpMethod, $route, $handler, array $regex = [], string $name = '')
     {
-        $parser = new RouteParser();
-        $routeDatas = $parser->parse($route, $this->currentPrefix, $regex);
+        $route = $this->currentPrefix.$route;
 
-        $route = new Route($routeDatas['route'], $httpMethod, $handler, $this->currentPrefix, $routeDatas['parameters']);
+        if(substr($route, 0, 1) != '/') {
+            $route = '/'.$route;
+        }
+
+        $route = new Route($route, $httpMethod, $handler, $this->currentPrefix, $regex, $name);
         array_push($this->routes, $route);
 
         return $route;
-
-    }
+    } 
 
     public function getRoutes()
     {

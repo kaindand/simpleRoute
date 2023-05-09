@@ -28,6 +28,13 @@ class Dispatcher
 
         return $result;
     }
+    public function generate($name, $parameters)
+    {
+        foreach($this->routes->getRoutes() as $route)
+        {
+            return $route->generate($name,$parameters);
+        }       
+    }
     private function handlerException()
     {
         if($this->exception != '') {
