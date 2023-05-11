@@ -38,24 +38,6 @@ class RouteCollector
 
     public function addRoute($httpMethod, $route, $handler, array $regex = [], string $name = '')
     {
-        $args = func_get_args();
-        
-        foreach($args as $arg)
-        {
-            if(is_array($arg)){
-                if($arg == $handler)
-                {
-                    
-                }else if($arg == $regex){
-
-                }else{
-                    foreach($arg as $key => $value){
-                        $args[$key] = $value;
-                    }
-                }
-            }
-        }
-
         $route = $this->currentPrefix.$route;
 
         if(substr($route, 0, 1) != '/') {
