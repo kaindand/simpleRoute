@@ -61,7 +61,7 @@ class Route
                                         $parameters[$key] =  $value;
                                     }
                                 }
-
+                                
                                 $object = new $this->handler[0]();
 
                                 call_user_func_array([$object,$this->handler[1]], $parameters);
@@ -77,9 +77,7 @@ class Route
                         return "pathNotFound";
                   }
                 }else {
-                    $action = $this->handler;
-
-                    return $action();
+                    call_user_func($this->handler);         
                 }
             } else {
                 return "httpMethodNotAllowed";
@@ -87,6 +85,7 @@ class Route
         } else {
             return "routeNotFound";
         }
+        exit;
     }
 
     public function generate($name, $parameters)
