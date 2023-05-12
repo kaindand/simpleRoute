@@ -25,18 +25,20 @@ class RouteCollector
 
     public function group($callback, string $prefix = '', string $name = '')
     {
-        if(substr($prefix, -1) != '/') {
-            $prefix = $prefix.'/';
+        if($prefix){
+            if(substr($prefix, -1) != '/') {
+                $prefix = $prefix.'/';
+            }
+    
+            $this->currentPrefix .= $prefix;
         }
-
-        $this->currentPrefix .= $prefix;
         
         $this->currentName .= $name;
 
         $callback($this);
     }
 
-    public function addRoute($httpMethod, $route, $handler, array $regex = [], string $name = '')
+    public function addRoute($httpMethod, $route, $handler, string $name = '')
     {
         $route = $this->currentPrefix.$route;
 
@@ -44,7 +46,7 @@ class RouteCollector
             $route = '/'.$route;
         }
 
-        $route = new Route($route, $httpMethod, $handler, $this->currentPrefix, $regex, $name);
+        $route = new Route($route, $httpMethod, $handler, $this->currentPrefix, [], $name);
         array_push($this->routes, $route);
 
         return $route;

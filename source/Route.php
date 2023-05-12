@@ -36,20 +36,22 @@ class Route
 
         $pattern = preg_replace('/\//', '\\/', $this->route);
 
-        $pattern = preg_replace_callback('/\{([a-z]+)?\}/', function ($matches) {
-            $argument = $matches[1];
-            $replace = $this->tokens[$argument] ?? '[^}]+';
-            return '(?P<'.$argument.'>'.$replace.')';
+        $pattern = preg_replace_callback('/\{([^}]+)?\}/', function ($matches) {
+            $this->tokens = explode(':',$matches[1]);
+            
+            $replace = $this->tokens[1] ?? '[^}]+';
+            
+            return '(?P<'.$this->tokens[0].'>'.$replace.')';
         }, $pattern);
 
         $pattern = '/^'.$pattern.'$/';
-
+        print($pattern);
         if (preg_match($pattern, $uri, $matches)) {
 
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod) {
 
                 if(is_array($this->handler)) {
-                    $filePath = 'source/Aboba'.'.php';
+                    $filePath = 'source/Test'.'.php';
 
                     if(file_exists($filePath)) {
                         include_once $filePath;

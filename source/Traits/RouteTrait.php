@@ -4,7 +4,7 @@ namespace SimpleRoute\Traits;
 
 trait RouteTrait
 {
-    public function get($httpMethod, $route, $handler, array $regex = [], string $name = '')
+    public function get($route, $handler, array $regex = [], string $name = '')
     {
         $this->addRoute('GET', $route, $handler, $regex, $name);
     }
