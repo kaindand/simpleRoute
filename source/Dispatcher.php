@@ -14,7 +14,9 @@ class Dispatcher
         $this->exception = $exception;
         $this->routes    = $routes;
     }
-
+    /**
+     *  
+     */
     public function dispatch()
     {
         foreach ($this->routes->getRoutes() as $route) {
@@ -28,13 +30,19 @@ class Dispatcher
 
         return $result;
     }
-    public function generate($name, $parameters)
+    /**
+     * 
+     */
+    public function generate(string $name, array $parameters = [])
     {
         foreach($this->routes->getRoutes() as $route)
         {
             return $route->generate($name,$parameters);
         }       
     }
+    /**
+     * 
+     */
     private function handlerException()
     {
         if($this->exception != '') {

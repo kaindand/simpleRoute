@@ -4,7 +4,6 @@ namespace SimpleRoute;
 
 use SimpleRoute\Traits\RouteTrait;
 use SimpleRoute\Route;
-use SimpleRoute\RouteParser;
 
 class RouteCollector
 {
@@ -22,7 +21,9 @@ class RouteCollector
         $this->currentPrefix       = $currentPrefix;
         $this->$currentName        = $currentName;
     }
-
+    /**
+     *  Adds a prefix to the $this->currentPrefix
+     */
     public function group($callback, string $prefix = '', string $name = '')
     {
         if($prefix){
@@ -37,8 +38,17 @@ class RouteCollector
 
         $callback($this);
     }
-
-    public function addRoute($httpMethod, $route, $handler, string $name = '')
+    /**
+     *  Adds a route to the collection $this->routes
+     * 
+     * @param mixed httpMethod 
+     * @param string route 
+     * @param mixed handler
+     * @param string name
+     * 
+     *  @return Route $route
+     */
+    public function addRoute($httpMethod, string $route, $handler, string $name = '')
     {
         $route = $this->currentPrefix.$route;
 
@@ -51,7 +61,11 @@ class RouteCollector
 
         return $route;
     } 
-
+    /**
+     *  Returns the collected route data
+     * 
+     *  @return array $this->routes
+     */
     public function getRoutes()
     {
         return $this->routes;

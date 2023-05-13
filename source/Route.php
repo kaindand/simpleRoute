@@ -45,13 +45,13 @@ class Route
         }, $pattern);
 
         $pattern = '/^'.$pattern.'$/';
-        print($pattern);
+
         if (preg_match($pattern, $uri, $matches)) {
 
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod) {
 
                 if(is_array($this->handler)) {
-                    $filePath = 'source/Test'.'.php';
+                    $filePath = 'source/Aboba'.'.php';
 
                     if(file_exists($filePath)) {
                         include_once $filePath;
@@ -67,8 +67,6 @@ class Route
                                 $object = new $this->handler[0]();
 
                                 call_user_func_array([$object,$this->handler[1]], $parameters);
-
-                                exit;
                             }else {
                                 return "methodNotFound";
                             }
@@ -90,7 +88,7 @@ class Route
         exit;
     }
 
-    public function generate($name, $parameters)
+    public function generate(string $name, array $parameters = [])
     {
         $parameters = array_filter($parameters);
         
@@ -104,6 +102,60 @@ class Route
             }, $this->route);
             return $url;
         }
+    }
+    /**
+     *  returns the route
+     * 
+     *  @return string $this->route
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+    /**
+     *  returns the name
+     * 
+     *  @return string $this->name
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+    /**
+     *  returns the HttpMethod
+     * 
+     *  @return string $this->httpMethod
+     */
+    public function getHttpMethod()
+    {
+        return $this->httpMethod;
+    }
+    /**
+     *  returns the handler
+     * 
+     *  @return mixed $this->handler
+     */
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+    /**
+     *  returns the tokens
+     * 
+     *  @return array $this->tokens
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
+    }
+    /**
+     *  returns the prefix
+     * 
+     *  @return string $this->prefix
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
 
 }

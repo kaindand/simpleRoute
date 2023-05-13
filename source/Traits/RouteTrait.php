@@ -4,33 +4,33 @@ namespace SimpleRoute\Traits;
 
 trait RouteTrait
 {
-    public function get($route, $handler, array $regex = [], string $name = '')
+    public function get(string $route, $handler, string $name = '')
     {
-        $this->addRoute('GET', $route, $handler, $regex, $name);
+        $this->addRoute('GET', $route, $handler, $name);
     }
 
-    public function post($route, $handler, array $regex = [], string $name = '')
+    public function post(string $route, $handler, string $name = '')
     {
-        $this->addRoute('POST', $route, $handler, $regex, $name);
+        $this->addRoute('POST', $route, $handler, $name);
     }
 
-    public function put($route, $handler, array $regex = [], string $name = '')
+    public function put(string $route, $handler, string $name = '')
     {
-        $this->addRoute('PUT', $route, $handler, $regex, $name);
+        $this->addRoute('PUT', $route, $handler, $name);
     }
 
-    public function patch($route, $handler, array $regex = [], string $name = '')
+    public function patch(string $route, $handler, string $name = '')
     {
-        $this->addRoute('PATCH', $route, $handler, $regex, $name);
+        $this->addRoute('PATCH', $route, $handler, $name);
     }
 
-    public function delete($route, $handler, array $regex = [], string $name = '')
+    public function delete(string $route, $handler, string $name = '')
     {
-        $this->addRoute('DELETE', $route, $handler, $regex, $name);
+        $this->addRoute('DELETE', $route, $handler, $name);
     }
 
-    public function any($route, $handler, array $regex = [], string $name = '')
+    public function any(string $route, $handler, string $name = '')
     {
-        $this->addRoute($_SERVER['REQUEST_METHOD'], $route, $handler, $regex, $name);
+        $this->addRoute($_SERVER['REQUEST_METHOD'], $route, $handler, $name);
     }
 }
