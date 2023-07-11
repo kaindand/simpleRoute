@@ -4,7 +4,7 @@ namespace SimpleRoute;
 
 use SimpleRoute\Exception\ParametersException;
 use SimpleRoute\Exception\BadRouteException;
-use SimpleRoute\Traits\GetInfoRouteTrait;
+
 
 class Route
 {
@@ -52,8 +52,8 @@ class Route
 
                 if(is_array($this->handler)) {
                     
-                    $filePath = $this->handler[0].'.php';
-                  
+                    $filePath = __DIR__.'/'.basename(str_replace('\\', '/', $this->handler[0])).'.php';
+
                     if(file_exists($filePath)) {
                         include_once $filePath;
 
