@@ -12,6 +12,7 @@
           "email": "kindand06@gmail.com"
       }
     ],
+    "license": "MIT",
     "minimum-stability": "dev",
     "require": {
       "php": ">=7.4.0"
