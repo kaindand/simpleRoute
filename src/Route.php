@@ -51,8 +51,9 @@ class Route
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod) {
 
                 if(is_array($this->handler)) {
-                    $filePath = 'source/Aboba'.'.php';
-
+                    
+                    $filePath = $this->handler[0].'.php';
+                  
                     if(file_exists($filePath)) {
                         include_once $filePath;
 
