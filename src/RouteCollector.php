@@ -24,17 +24,21 @@ class RouteCollector
     /**
      *  Adds a prefix to the $this->currentPrefix
      */
-    public function group($callback, string $prefix = '', string $name = '')
+    public function group($callback, array $data = [])
     {
-        if($prefix){
-            if(substr($prefix, -1) != '/') {
-                $prefix = $prefix.'/';
+        if(isset($data['prefix'])){
+            $prefix = $data['prefix'];
+            if(substr($data['prefix'], -1) != '/') {
+                $prefix = $data['prefix'].'/';
             }
     
             $this->currentPrefix .= $prefix;
         }
-        
-        $this->currentName .= $name;
+
+        if(isset($data['name']))
+        {
+            $this->currentName .= $data['name'];
+        }
 
         $callback($this);
     }
@@ -51,14 +55,15 @@ class RouteCollector
     public function addRoute($httpMethod, string $route, $handler, string $name = '')
     {
         $route = $this->currentPrefix.$route;
+        $name = $this->currentName.$name;
 
         if(substr($route, 0, 1) != '/') {
             $route = '/'.$route;
         }
 
-        $route = new Route($route, $httpMethod, $handler, $this->currentPrefix, [], $name);
+        $route = new Route($httpMethod, $route, $handler, $this->currentPrefix, [], $name);
         array_push($this->routes, $route);
-
+        
         return $route;
     } 
     /**

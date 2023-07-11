@@ -20,7 +20,7 @@ class Route
 
     private $name;
 
-    public function __construct($route, $httpMethod, $handler, string $prefix = '', array $tokens = null, string $name = '')
+    public function __construct($httpMethod, $route, $handler, string $prefix = '', array $tokens = null, string $name = '')
     {
         $this->route        = $route;
         $this->httpMethod   = $httpMethod;
@@ -58,6 +58,8 @@ class Route
 
                         if(class_exists($this->handler[0], false)) {
                             if(method_exists($this->handler[0], $this->handler[1])) {
+                                $parameters = [];
+                                
                                 foreach ($matches as $key => $value) {
                                     if (is_string($key)) {
                                         $parameters[$key] =  $value;
@@ -65,7 +67,7 @@ class Route
                                 }
                                 
                                 $object = new $this->handler[0]();
-
+                               
                                 call_user_func_array([$object,$this->handler[1]], $parameters);
                             }else {
                                 return "methodNotFound";

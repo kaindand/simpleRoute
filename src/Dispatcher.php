@@ -3,6 +3,7 @@
 namespace SimpleRoute;
 
 use SimpleRoute\Exception\BadRouteException;
+use SimpleRoute\Exception\MethodNotAllowedException;
 
 class Dispatcher
 {
@@ -46,6 +47,9 @@ class Dispatcher
     private function handlerException()
     {
         if($this->exception != '') {
+            if($this->exception == 'methodNotAllowed'){
+                throw new MethodNotAllowedException($this->exception);
+            }
             throw new BadRouteException($this->exception);
         }
     }
