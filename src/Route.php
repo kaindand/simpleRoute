@@ -2,6 +2,7 @@
 
 namespace SimpleRoute;
 
+use ReflectionClass;
 use SimpleRoute\Exception\ParametersException;
 use SimpleRoute\Exception\BadRouteException;
 
@@ -51,9 +52,9 @@ class Route
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod) {
 
                 if(is_array($this->handler)) {
+                    $path = new ReflectionClass($this->handler[0]);
+                    $filePath = $path->getFileName();
                     
-                    $filePath = __DIR__.'/'.basename(str_replace('\\', '/', $this->handler[0])).'.php';
-
                     if(file_exists($filePath)) {
                         include_once $filePath;
 
