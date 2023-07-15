@@ -75,21 +75,5 @@ class RouteCollector
     {
         return $this->routes;
     }
-/**
-     *  Returns beautifully collected route information
-     * 
-     *  @return array $this->routes
-     */
-    public function getRoutesInfo()
-    {
-        $routesInfo = [];
-
-        for ($i=0; $i < count($this->routes); $i++) 
-        { 
-            $routesInfo[$i] = $this->routes[$i]->getRouteInfo()."<hr>";
-        }
-
-        return $routesInfo;
-    }
 
 }
