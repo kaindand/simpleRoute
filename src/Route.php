@@ -144,15 +144,6 @@ class Route
         return $this->handler;
     }
     /**
-     *  returns the tokens
-     * 
-     *  @return array $this->tokens
-     */
-    public function getTokens()
-    {
-        return $this->tokens;
-    }
-    /**
      *  returns the prefix
      * 
      *  @return string $this->prefix
@@ -161,5 +152,16 @@ class Route
     {
         return $this->prefix;
     }
-
+    /**
+     *  returns the route info
+     * 
+     *  @return string 
+     */
+    public function getRouteInfo()
+    {
+        return  "<strong>route: </strong>". $this->route . "<br>".
+                "<strong>httpMethod: </strong>". $this->httpMethod ."<br>".
+                "<strong>prefix: </strong>". $this->prefix ."<br>".
+                "<strong>name: </strong>". $this->name ."<br>";
+    }
 }
