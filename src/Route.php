@@ -17,15 +17,18 @@ class Route
 
     private $handler;
 
+    private $middleware;
+
     private $tokens;
 
     private $name;
 
-    public function __construct($httpMethod, $route, $handler, string $prefix = '', array $tokens = null, string $name = '')
+    public function __construct($httpMethod, $route, $handler, $middleware, string $prefix = '', array $tokens = null, string $name = '')
     {
         $this->route        = $route;
         $this->httpMethod   = $httpMethod;
         $this->handler      = $handler;
+        $this->middleware   = $middleware;
         $this->tokens       = $tokens;
         $this->prefix       = $prefix;
         $this->name         = $name;
@@ -34,32 +37,39 @@ class Route
     public function match()
     {
         $uri = $_SERVER['REQUEST_URI'];
-
+        
         $pattern = preg_replace('/\//', '\\/', $this->route);
 
         $pattern = preg_replace_callback('/\{([^}]+)?\}/', function ($matches) {
             $this->tokens = explode(':',$matches[1]);
             
-            $replace = $this->tokens[1] ?? '[^}]+';
+            $replace = $this->tokens[1] ?? '[^/]+';
             
-            return '(?P<'.$this->tokens[0].'>'.$replace.')';
+            return '(?<' . $this->tokens[0]. '>' .$replace.')';
         }, $pattern);
-
-        $pattern = '/^'.$pattern.'$/';
+        
+        $pattern = '@^'.$pattern.'$@';
 
         if (preg_match($pattern, $uri, $matches)) {
 
             if($_SERVER['REQUEST_METHOD'] == $this->httpMethod) {
 
                 if(is_array($this->handler)) {
-                    $path = new ReflectionClass($this->handler[0]);
-                    $filePath = $path->getFileName();
+                    $info = new ReflectionClass($this->handler[0]);
+                    $filePath = $info->getFileName();
                     
                     if(file_exists($filePath)) {
                         include_once $filePath;
 
                         if(class_exists($this->handler[0], false)) {
                             if(method_exists($this->handler[0], $this->handler[1])) {
+                                if(isset($this->middleware))
+                                {                       
+                                    foreach($this->middleware as $middleware)
+                                    {
+                                        (new $middleware());
+                                    }
+                                }
                                 $parameters = [];
                                 
                                 foreach ($matches as $key => $value) {
@@ -153,15 +163,32 @@ class Route
         return $this->prefix;
     }
     /**
+     *  returns the middleware
+     * 
+     *  @return string $this->middleware
+     */
+    public function getMiddleware()
+    {
+        return $this->middleware;
+    }
+    /**
      *  returns the route info
      * 
      *  @return string 
      */
     public function getRouteInfo()
     {
-        return  "<strong>route: </strong>". $this->route . "<br>".
-                "<strong>httpMethod: </strong>". $this->httpMethod ."<br>".
-                "<strong>prefix: </strong>". $this->prefix ."<br>".
-                "<strong>name: </strong>". $this->name ."<br>";
+        $routeInfo = "<strong>route: </strong> $this->route <br>".
+                    "<strong>httpMethod: </strong> $this->httpMethod <br>".
+                    "<strong>prefix: </strong> $this->prefix <br>".
+                    "<strong>name: </strong>". $this->name ."<br>".
+                    "<strong>middleware: </strong>";
+
+        foreach($this->middleware as $m)
+        {
+            $routeInfo .= $m."<br>";
+        }
+
+        return $routeInfo;
     }
 }

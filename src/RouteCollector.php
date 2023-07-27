@@ -4,6 +4,7 @@ namespace SimpleRoute;
 
 use SimpleRoute\Traits\RouteTrait;
 use SimpleRoute\Route;
+use SimpleRoute\ResourceRegister;
 
 class RouteCollector
 {
@@ -11,13 +12,16 @@ class RouteCollector
 
     private $routes = [];
 
+    private $currentMiddleware = [];
+
     private $currentPrefix;
 
     private $currentName;
 
-    public function __construct(array $routes = [], string $currentPrefix = '', string $currentName = '')
+    public function __construct(array $routes = [], $currentMiddleware = [], string $currentPrefix = '', string $currentName = '')
     {
         $this->routes              = $routes;
+        $this->currentMiddleware   = $currentMiddleware;
         $this->currentPrefix       = $currentPrefix;
         $this->$currentName        = $currentName;
     }
@@ -33,6 +37,11 @@ class RouteCollector
             }
     
             $this->currentPrefix .= $prefix;
+        }
+
+        if(isset($data['middleware']))
+        {
+            $this->currentMiddleware = $data['middleware'];
         }
 
         if(isset($data['name']))
@@ -52,20 +61,39 @@ class RouteCollector
      * 
      *  @return Route $route
      */
-    public function addRoute($httpMethod, string $route, $handler, string $name = '')
+    public function addRoute($httpMethod, string $route, $handler, array $data = [])
     {
         $route = $this->currentPrefix.$route;
-        $name = $this->currentName.$name;
+
+        $name = '';
+
+        if(isset($data['name']))
+        {
+            $name = $this->currentName.$data['name'];
+        }
+        
+        if(isset($data['middleware']))
+        {
+            foreach($data['middleware'] as $m)
+            {
+                array_push($this->currentMiddleware, $m);
+            }
+        }
 
         if(substr($route, 0, 1) != '/') {
             $route = '/'.$route;
         }
 
-        $route = new Route($httpMethod, $route, $handler, $this->currentPrefix, [], $name);
+        $route = new Route($httpMethod, $route, $handler, $this->currentMiddleware, $this->currentPrefix, [], $name);
         array_push($this->routes, $route);
         
         return $route;
     } 
+    public function resource($name, $handler, array $middleware = [])
+    {
+        $resourceRegister = new ResourceRegister($this);
+        $resourceRegister->register($name, $handler, $middleware);
+    }
     /**
      *  Returns the collected route data
      * 
@@ -76,7 +104,7 @@ class RouteCollector
         return $this->routes;
     }
     /**
-     *  Returns beautifully collected route information
+     *  Returns beautifully collected routes information
      * 
      *  @return array $this->routes
      */
@@ -91,5 +119,4 @@ class RouteCollector
 
         return $routesInfo;
     }
-
 }
