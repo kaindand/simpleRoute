@@ -177,7 +177,7 @@ class Route
      *  @return string 
      */
     public function getRouteInfo()
-    {
+    {    
         $routeInfo = "<strong>route: </strong> $this->route <br>".
                     "<strong>httpMethod: </strong> $this->httpMethod <br>".
                     "<strong>prefix: </strong> $this->prefix <br>".

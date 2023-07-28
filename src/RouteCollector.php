@@ -28,25 +28,25 @@ class RouteCollector
     /**
      *  Adds a prefix to the $this->currentPrefix
      */
-    public function group($callback, array $data = [])
+    public function group($callback, array $options = [])
     {
-        if(isset($data['prefix'])){
-            $prefix = $data['prefix'];
-            if(substr($data['prefix'], -1) != '/') {
-                $prefix = $data['prefix'].'/';
+        if(isset($options['prefix'])){
+            $prefix = $options['prefix'];
+            if(substr($options['prefix'], -1) != '/') {
+                $prefix = $options['prefix'].'/';
             }
     
             $this->currentPrefix .= $prefix;
         }
 
-        if(isset($data['middleware']))
+        if(isset($options['middleware']))
         {
-            $this->currentMiddleware = $data['middleware'];
+            $this->currentMiddleware = $options['middleware'];
         }
 
-        if(isset($data['name']))
+        if(isset($options['name']))
         {
-            $this->currentName .= $data['name'];
+            $this->currentName .= $options['name'];
         }
 
         $callback($this);
@@ -61,22 +61,24 @@ class RouteCollector
      * 
      *  @return Route $route
      */
-    public function addRoute($httpMethod, string $route, $handler, array $data = [])
+    public function addRoute($httpMethod, string $route, $handler, array $options = [])
     {
+        $middlewares = $this->currentMiddleware;
+
         $route = $this->currentPrefix.$route;
 
         $name = '';
 
-        if(isset($data['name']))
+        if(isset($options['name']))
         {
-            $name = $this->currentName.$data['name'];
+            $name = $this->currentName.$options['name'];
         }
         
-        if(isset($data['middleware']))
+        if(isset($options['middleware']))
         {
-            foreach($data['middleware'] as $m)
+            foreach($options['middleware'] as $m)
             {
-                array_push($this->currentMiddleware, $m);
+                array_push($middlewares, $m);
             }
         }
 
@@ -84,15 +86,15 @@ class RouteCollector
             $route = '/'.$route;
         }
 
-        $route = new Route($httpMethod, $route, $handler, $this->currentMiddleware, $this->currentPrefix, [], $name);
+        $route = new Route($httpMethod, $route, $handler, $middlewares, $this->currentPrefix, [], $name);
         array_push($this->routes, $route);
         
         return $route;
     } 
-    public function resource($name, $handler, array $middleware = [])
+    public function resource($name, $handler, array $options = [])
     {
         $resourceRegister = new ResourceRegister($this);
-        $resourceRegister->register($name, $handler, $middleware);
+        $resourceRegister->register($name, $handler, $options);
     }
     /**
      *  Returns the collected route data

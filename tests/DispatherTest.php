@@ -18,9 +18,11 @@ class DispatherTest extends TestCase
         $dispatcher->dispatch();
     }
 
+    
     public function testDispatchThrowsMethodNotAllowedException()
     {
         $routes = new DummyRouteCollector();
+        
         $routes->addRoute('GET', '/path', 'Handler');
         $_SERVER['REQUEST_URI'] = '/path';
         $_SERVER['REQUEST_METHOD'] = 'POST';
